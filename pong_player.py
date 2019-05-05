@@ -21,9 +21,9 @@ class MyModelClass(torch.nn.Module):
         self.relu1 = torch.nn.ReLU(inplace=True)
         self.relu2 = torch.nn.ReLU(inplace=True)
         self.relu3 = torch.nn.ReLU(inplace=True)
-        self.fc1 = torch.nn.Linear(7, 50).float()
-        self.fc2 = torch.nn.Linear(50, 50).float()
-        self.fc3 = torch.nn.Linear(50, self.number_of_actions).float()
+        self.fc1 = torch.nn.Linear(7, 20).float()
+        self.fc2 = torch.nn.Linear(20, 10).float()
+        self.fc3 = torch.nn.Linear(10, self.number_of_actions).float()
     
     def forward(self, x):
         # x = np.array(x)
@@ -82,6 +82,24 @@ class PongPlayer(object):
             'optimizer_state_dict': self.optimizer.state_dict()
         }
         torch.save(state, self.save_path)
+
+    def learn(self, memory, next_state):
+        self.optimizer.zero_grad()
+        size = len(memory)
+        # print('Memory:', memory)
+        states = torch.from_numpy(memory[:, :7]).type('torch.FloatTensor')
+        actions = torch.from_numpy(memory[:, 7]).type('torch.FloatTensor')
+        rewards = torch.from_numpy(memory[:, 8]).type('torch.FloatTensor')
+        next_state = torch.from_numpy(next_state).type('torch.FloatTensor')
+        print(rewards.data[0])
+        print('State:', states)
+        # print('Next state:', next_state)
+        state_action_values = self.model(states)
+        # print('Shape:', rewards.shape, ',', next_state.shape)
+        expected_state_action_values = (next_state * self.model.gamma) + rewards.data[-1]
+        loss = F.smooth_l1_loss(state_action_values.unsqueeze(1), expected_state_action_values.unsqueeze(1))
+        loss.backward()
+        self.optimizer.step()
 
     
 def play_game(player, render=True):
