@@ -1,15 +1,41 @@
 import torch
+import numpy as np
+import torch.nn.functional as F
 
-from .pong_env import PongEnv
+from pong_env import PongEnv
 
 # TODO replace this class with your model
 class MyModelClass(torch.nn.Module):
     
     def __init__(self):
-        pass
+        super(MyModelClass, self).__init__()
+
+        self.number_of_actions = 3
+        self.gamma = 0.99
+        self.final_epsilon = 0.0001
+        self.initial_epsilon = 0.1
+        self.number_of_iterations = 2000000
+        self.replay_memory_size = 10000
+        self.minibatch_size = 32
+
+        self.relu1 = torch.nn.ReLU(inplace=True)
+        self.relu2 = torch.nn.ReLU(inplace=True)
+        self.relu3 = torch.nn.ReLU(inplace=True)
+        self.fc1 = torch.nn.Linear(7, 50).float()
+        self.fc2 = torch.nn.Linear(50, 50).float()
+        self.fc3 = torch.nn.Linear(50, self.number_of_actions).float()
     
     def forward(self, x):
-        pass
+        # x = np.array(x)
+        # x = Variable(torch.from_numpy(x))
+        x = torch.tensor(x).type('torch.FloatTensor')
+        out = self.fc1(x)
+        out = self.relu1(out)
+        out = self.fc2(out)
+        out = self.relu2(out)
+        out = self.fc3(out)
+
+        return out
 
 
 # TODO fill out the methods of this class
@@ -32,11 +58,12 @@ class PongPlayer(object):
 
     def build_optimizer(self):
         # TODO: define your optimizer here
-        self.optimizer = None
+        self.optimizer = torch.optim.Adam(self.model.parameters())
 
     def get_action(self, state):
         # TODO: this method should return the output of your model
-        pass
+        indices = torch.argmax(self.model.forward(state), 0)
+        return indices.item()
 
     def reset(self):
         # TODO: this method will be called whenever a game finishes
@@ -73,3 +100,7 @@ def play_game(player, render=True):
         total_reward += reward
     
     env.close()
+
+if __name__ == '__main__':
+    player = PongPlayer('./')
+    play_game(player)
