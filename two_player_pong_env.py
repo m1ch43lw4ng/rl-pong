@@ -2,6 +2,7 @@ import gym
 import numpy as np
 from gym.utils import seeding
 from gym import spaces
+from pong_player import PongPlayer
 
 
 class PongEnv(gym.Env):
@@ -40,6 +41,8 @@ class PongEnv(gym.Env):
         return [seed]
 
     def step(self, player1_action, player2_action):
+        print ('Player 1', player1_action)
+        print ('Player 2', player2_action)
         assert self.player1_action_space.contains(player1_action), "Invalid action player 1."
         assert self.player2_action_space.contains(player2_action), "Invalid action player 2."
 
@@ -280,8 +283,25 @@ if __name__ == '__main__':
     env = PongEnv()
     env.reset()
     done = False
+    player1_state, player2_state = env.reset()
+    player1 = PongPlayer('./')
+    player2 = PongPlayer('./')
+    action1 = player1.get_action(player1_state)
+    action2 = player2.get_action(player2_state)
+    total_reward1 = 0
+    total_reward2 = 0
+
     while not done:
-        _, _, _, _, done, _ = env.step(env.np_random.randint(3), env.np_random.randint(3))
+        player1_state, player2_state, player1_reward, player2_reward, done, _ = env.step(action1, action2)
         env.render()
+        total_reward1 += player1_reward
+        total_reward2 += player2_reward
+        action1 = player1.get_action(player1_state)
+        action2 = player2.get_action(player2_state)
+    
+    print('Reward: ', player1_reward, ', ', player2_reward)
+
+    player1.reset()
+    player2.reset()
     
     env.close()
