@@ -335,8 +335,8 @@ class PongEnv(gym.Env):
 
             self.viewer.add_geom(ball)
 
-        ball_pos_x, ball_pos_y, _, _, paddle1_pos_y, _, _ = self.player1_state
-        ball_pos_x, ball_pos_y, _, _, paddle2_pos_y, _, _ = self.player2_state
+        ball_pos_x, ball_pos_y, ball_vel_x, ball_vel_y, paddle1_pos_y, paddle2_pos_y, score1 = self.player1_state
+        ball_pos_x, ball_pos_y, ball_vel_x, ball_vel_y, paddle2_pos_y, paddle2_pos_y, score2 = self.player2_state
         #self.paddle_transform.set_translation(50, 50)
         self.paddle1_transform.set_translation(paddle_width/2, paddle1_pos_y * yscale)
         self.paddle2_transform.set_translation(screen_width - paddle_width/2, paddle2_pos_y * yscale)
@@ -357,8 +357,8 @@ if __name__ == '__main__':
     env.reset()
     done = False
     p1_state, p2_state = env.reset()
-    player1 = PongPlayer('./player1')
-    player2 = PongPlayer('./player2')
+    player1 = PongPlayer('./player')
+    player2 = PongPlayer('./player')
     player1.load()
     player2.load()
     p1_action = player1.get_action(p1_state)
@@ -393,8 +393,10 @@ if __name__ == '__main__':
         player2.learn(np.array(p2_memory)[:], np.array(p2_state[:]))
     
     print('Reward: ', p1_total_reward, ', ', p2_total_reward)
-    player1.save()
-    player2.save()
+    if (p1_total_reward > p2_total_reward):
+        player1.save()
+    else:
+        player2.save()
 
     player1.reset()
     player2.reset()

@@ -3,7 +3,6 @@ import numpy as np
 from gym.utils import seeding
 from gym import spaces
 
-
 class PongEnv(gym.Env):
 
     def __init__(self):
@@ -157,7 +156,7 @@ class PongEnv(gym.Env):
 
             self.viewer.add_geom(ball)
 
-        ball_pos_x, ball_pos_y, _, _, paddle_pos_y, _, _ = self.state
+        ball_pos_x, ball_pos_y, ball_vel_x, ball_vel_y, paddle_pos_y, paddle_vel_y, score = self.state
         #self.paddle_transform.set_translation(50, 50)
         self.paddle_transform.set_translation(paddle_width/2, paddle_pos_y * yscale)
         self.ball_transform.set_translation(ball_pos_x * xscale, ball_pos_y * yscale)

@@ -110,15 +110,20 @@ def play_game(player, render=True):
     action = player.get_action(state)
     done = False
     total_reward = 0
-    while not done:
+    player.load()
+    i = 0
+    while not done and i < 100:
         next_state, reward, done, _ = env.step(action)
         if render:
             env.render()
         action = player.get_action(next_state)
         total_reward += reward
-    
+    player.save()
+    print('Total reward:', total_reward)
+    i += 1
+
     env.close()
 
 if __name__ == '__main__':
-    player = PongPlayer('./')
+    player = PongPlayer('./player2')
     play_game(player)
