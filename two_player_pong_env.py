@@ -259,8 +259,8 @@ class PongEnv(gym.Env):
 
             self.viewer.add_geom(ball)
 
-        ball_pos_x, ball_pos_y, _, _, paddle1_pos_y, _, _ = self.player1_state
-        ball_pos_x, ball_pos_y, _, _, paddle2_pos_y, _, _ = self.player2_state
+        ball_pos_x, ball_pos_y, ball_vel_x, ball_vel_y, paddle1_pos_y, paddle2_pos_y, score1 = self.player1_state
+        ball_pos_x, ball_pos_y, ball_vel_x, ball_vel_y, paddle2_pos_y, paddle2_pos_y, score2 = self.player2_state
         #self.paddle_transform.set_translation(50, 50)
         self.paddle1_transform.set_translation(paddle_width/2, paddle1_pos_y * yscale)
         self.paddle2_transform.set_translation(screen_width - paddle_width/2, paddle2_pos_y * yscale)
@@ -281,7 +281,7 @@ if __name__ == '__main__':
     env.reset()
     done = False
     while not done:
-        _, _, _, _, done, _ = env.step(env.np_random.randint(3), env.np_random.randint(3))
+        env.player1_state, env.player2_state, env.player1_reward, env.player2_reward, done, _ = env.step(env.np_random.randint(3), env.np_random.randint(3))
         env.render()
     
     env.close()
