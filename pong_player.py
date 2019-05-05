@@ -125,5 +125,5 @@ def play_game(player, render=True):
     env.close()
 
 if __name__ == '__main__':
-    player = PongPlayer('./player2')
+    player = PongPlayer('./player')
     play_game(player)
