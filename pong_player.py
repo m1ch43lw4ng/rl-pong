@@ -104,3 +104,4 @@ def play_game(player, render=True):
 if __name__ == '__main__':
     player = PongPlayer('./')
     play_game(player)
+    
